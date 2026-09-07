@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Road to a PS5</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f2f3f5;color:#111}
+header{background:#111;color:white;padding:24px 5%;display:flex;justify-content:space-between;align-items:center;gap:20px}
+header h1{margin:0;font-size:30px} header p{margin:5px 0 0;color:#bbb}
+.container{max-width:1400px;margin:auto;padding:22px 5%}
+.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.card{background:white;border-radius:14px;padding:18px;box-shadow:0 2px 9px #00000012}
+.stat{min-height:105px}.stat small{color:#666;font-weight:bold}.stat strong{display:block;font-size:28px;margin-top:8px}
+.green{background:#20ff20}.yellow{background:#fff500}.pink{background:#ff00e6}.red{background:#ffdddd}
+.progress{height:24px;background:#ddd;border-radius:20px;overflow:hidden;margin-top:10px}
+.progress div{height:100%;width:0;background:#111;transition:.25s}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+.tablewrap{overflow:auto}
+table{border-collapse:collapse;width:100%;min-width:850px}
+th,td{border:1px solid #d8d8d8;padding:9px}
+th{background:#eee;text-align:left}
+td input,td select{width:100%;border:0;background:transparent;outline:0;font:inherit}
+td.money input{text-align:right}
+tfoot th{background:#f6f6f6}
+button{border:0;border-radius:9px;padding:10px 15px;font-weight:bold;cursor:pointer}
+.add{background:#111;color:white}.secondary{background:#eee}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.settings{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.settings label{font-size:13px;color:#666}
+.settings input{width:100%;padding:9px;border:1px solid #ccc;border-radius:7px}
+.section-title{margin:0 0 12px}
+.note{color:#666;font-size:13px;line-height:1.45}
+.service-list{display:grid;gap:8px}
+.service{padding:11px;background:#f5f5f5;border-radius:9px}
+@media(max-width:1000px){.dashboard{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}}
+@media(max-width:600px){.dashboard{grid-template-columns:1fr}header{display:block}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>🎮 My Road to a PS5</h1>
+    <p>From small jobs → big goal</p>
+  </div>
+  <strong id="headerProgress">0%</strong>
+</header>
+
+<div class="container">
+  <div class="dashboard">
+    <div class="card stat red"><small>CONSOLE FUND</small><strong id="fund">$0.00</strong></div>
+    <div class="card stat yellow"><small>PS5 GOAL</small><strong id="goalDisplay">$1,100.00</strong></div>
+    <div class="card stat green"><small>REMAINING MONEY NEEDED</small><strong id="remaining">$1,100.00</strong></div>
+    <div class="card stat pink"><small>LOLLIE MONEY</small><strong id="lollies">$0.00</strong></div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <strong>PROGRESS</strong><strong id="progressText">0%</strong>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+  </div>
+
+  <div class="grid">
+    <main class="card">
+      <h2 class="section-title">💰 Jobs & Earnings</h2>
+      <p class="note">Enter a job and the console/lollie amounts update automatically.</p>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Job</th><th>Address</th><th>Money Earned</th>
+              <th>Console (<span id="cpLabel">95</span>%)</th><th>Lollies (<span id="lpLabel">5</span>%)</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="jobs"></tbody>
+          <tfoot>
+            <tr><th colspan="3">TOTAL</th><th id="totalEarned">$0.00</th><th id="totalConsole">$0.00</th><th id="totalLollies">$0.00</th><th></th></tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="controls">
+        <button class="add" onclick="addRow()">+ Add Job</button>
+        <button class="secondary" onclick="clearJobs()">Clear Jobs</button>
+      </div>
+    </main>
+
+    <aside>
+      <div class="card" style="margin-bottom:18px">
+        <h2 class="section-title">⚙️ Automatic Settings</h2>
+        <div class="settings">
+          <div><label>PS5 goal ($)</label><input id="goal" type="number" min="0" value="1100"></div>
+          <div><label>Console %</label><input id="consolePct" type="number" min="0" max="100" value="95"></div>
+          <div><label>Lollies %</label><input id="lollyPct" type="number" min="0" max="100" value="5"></div>
+          <div><label>Weekly target ($)</label><input id="weeklyTarget" type="number" min="0" value="150"></div>
+        </div>
+        <p class="note">The spreadsheet example uses 95% for the console and 5% for lollies. You can change the percentages here.</p>
+      </div>
+
+      <div class="card" style="margin-bottom:18px">
+        <h2 class="section-title">📋 Business Ideas</h2>
+        <div class="service-list">
+          <div class="service"><b>🌱 Gardening</b><br><span class="note">Lawn mowing, weeding, watering and tidy-ups.</span></div>
+          <div class="service"><b>🚗 Car Washing</b><br><span class="note">Basic washes and fuller car cleans.</span></div>
+          <div class="service"><b>🍋 Lemonade</b><br><span class="note">Sell only where permitted, with clean setup and adult involvement.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">📈 Weekly Target</h2>
+        <p class="note">Console money this week compared with your weekly target.</p>
+        <strong id="weeklyStatus">$0 / $150</strong>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const jobs=document.getElementById('jobs');
+const goal=document.getElementById('goal');
+const consolePct=document.getElementById('consolePct');
+const lollyPct=document.getElementById('lollyPct');
+const weeklyTarget=document.getElementById('weeklyTarget');
+
+function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function money(v){return '$'+Number(v||0).toFixed(2)}
+
+function addRow(d={}){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+  <td><input type="date" value="${esc(d.date)}"></td>
+  <td><input placeholder="e.g. lawn + car" value="${esc(d.job)}"></td>
+  <td><input placeholder="Address" value="${esc(d.address)}"></td>
+  <td class="money"><input type="number" min="0" step=".01" placeholder="0" value="${esc(d.earned)}"></td>
+  <td class="console">$0.00</td><td class="lolly">$0.00</td>
+  <td><button class="secondary" onclick="this.closest('tr').remove();update()">✕</button></td>`;
+  jobs.appendChild(tr);
+  tr.querySelectorAll('input').forEach(x=>x.addEventListener('input',update));
+  update();
+}
+
+function update(){
+  const cp=Number(consolePct.value)||0, lp=Number(lollyPct.value)||0;
+  let earned=0,cf=0,lm=0;
+  [...jobs.rows].forEach(tr=>{
+    const n=Number(tr.cells[3].querySelector('input').value)||0;
+    const c=n*cp/100,l=n*lp/100;
+    tr.querySelector('.console').textContent=money(c);
+    tr.querySelector('.lolly').textContent=money(l);
+    earned+=n;cf+=c;lm+=l;
+  });
+  const g=Math.max(0,Number(goal.value)||0);
+  const rem=Math.max(0,g-cf);
+  const pct=g?Math.min(100,cf/g*100):0;
+  document.getElementById('fund').textContent=money(cf);
+  document.getElementById('goalDisplay').textContent=money(g);
+  document.getElementById('remaining').textContent=money(rem);
+  document.getElementById('lollies').textContent=money(lm);
+  document.getElementById('totalEarned').textContent=money(earned);
+  document.getElementById('totalConsole').textContent=money(cf);
+  document.getElementById('totalLollies').textContent=money(lm);
+  document.getElementById('progressText').textContent=Math.round(pct)+'%';
+  document.getElementById('headerProgress').textContent=Math.round(pct)+'%';
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('cpLabel').textContent=cp;
+  document.getElementById('lpLabel').textContent=lp;
+  document.getElementById('weeklyStatus').textContent=money(cf)+' / '+money(weeklyTarget.value);
+  save();
+}
+
+function save(){
+  const data=[...jobs.rows].map(tr=>({
+    date:tr.cells[0].querySelector('input').value,
+    job:tr.cells[1].querySelector('input').value,
+    address:tr.cells[2].querySelector('input').value,
+    earned:tr.cells[3].querySelector('input').value
+  }));
+  localStorage.setItem('ps5Tracker',JSON.stringify({
+    data,goal:goal.value,cp:consolePct.value,lp:lollyPct.value,weekly:weeklyTarget.value
+  }));
+}
+function load(){
+  const s=JSON.parse(localStorage.getItem('ps5Tracker')||'null');
+  if(s){
+    goal.value=s.goal??1100; consolePct.value=s.cp??95; lollyPct.value=s.lp??5; weeklyTarget.value=s.weekly??150;
+    (s.data||[]).forEach(addRow);
+  }
+  if(!jobs.rows.length) addRow();
+  update();
+}
+function clearJobs(){
+  if(confirm('Clear all jobs?')){jobs.innerHTML='';addRow();}
+}
+[goal,consolePct,lollyPct,weeklyTarget].forEach(x=>x.addEventListener('input',update));
+load();
+</script>
+</body>
+</html>
